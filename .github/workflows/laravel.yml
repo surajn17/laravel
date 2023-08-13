@@ -18,7 +18,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y php php-cli php-mbstring unzip
           php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-          php composer-setup.php --install-dir=/usr/local/bin --filename=composer
+          php composer-setup.php --install-dir=/var/www/html/MyProject --filename=composer
 
       - name: Install Dependencies and Build
         run: |
@@ -29,6 +29,6 @@ jobs:
 
       - name: Deploy
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@172.31.32.134 "cd /home/ubuntu/your-laravel-app && git pull origin main && composer install --no-interaction --no-dev && php artisan migrate"
+          ssh -o StrictHostKeyChecking=no ubuntu@172.31.32.134 "cd /var/www/html/MyProject && git pull origin main && composer install --no-interaction --no-dev && php artisan migrate"
         env:
           SSH_PRIVATE_KEY: ${{ secrets.YOUR_SECRET_NAME }}  # Replace with the name of your secret
