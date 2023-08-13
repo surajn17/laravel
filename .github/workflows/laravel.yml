@@ -3,7 +3,7 @@ name: Deploy Laravel App
 on:
   push:
     branches:
-      - main  # Change this to your branch name
+      - main  # Adjust this to your branch name
 
 jobs:
   deploy:
@@ -22,6 +22,7 @@ jobs:
 
       - name: Install Dependencies and Build
         run: |
+          cd /home/ubuntu/your-laravel-app  # Adjust this path
           composer install --no-interaction --no-dev --optimize-autoloader
           cp .env.example .env
           php artisan key:generate
