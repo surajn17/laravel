@@ -13,6 +13,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Navigate to Laravel Project Directory
+        run: cd /var/www/html/MyProject
+
       - name: Install PHP and Composer
         run: |
           sudo apt-get update
