@@ -22,7 +22,6 @@ jobs:
 
       - name: Install Dependencies and Build
         run: |
-          cd /var/www/html/MyProject
           composer install --no-interaction --no-dev --optimize-autoloader
           cp .env.example .env
           php artisan key:generate
