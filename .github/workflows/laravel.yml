@@ -20,9 +20,12 @@ jobs:
           php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
           php composer-setup.php --install-dir=/usr/local/bin --filename=composer
 
-      - name: Install Dependencies and Build
-        run: |
-          composer install --no-interaction --no-dev --optimize-autoloader
+      - name: Install Composer Dependencies
+        run: composer install --no-interaction --no-dev
+
+      - name: Optimize Composer Autoloader
+        run: composer dump-autoload --optimize
+
           cp .env.example .env
           php artisan key:generate
 
