@@ -21,11 +21,8 @@ jobs:
           php composer-setup.php --install-dir=/usr/local/bin --filename=composer
 
       - name: Install Composer Dependencies
-        run: composer install --no-interaction --no-dev
-
-      - name: Optimize Composer Autoloader
-        run: composer dump-autoload --optimize
-
+        run: |
+          composer install --no-interaction --no-dev --optimize-autoloader
           cp .env.example .env
           php artisan key:generate
 
