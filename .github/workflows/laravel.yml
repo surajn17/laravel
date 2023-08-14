@@ -33,8 +33,9 @@ jobs:
 
     - name: Create and Set Up Laravel Project
       run: |
-        composer create-project --prefer-dist laravel/laravel my-laravel-app
+        mkdir my-laravel-app
         cd my-laravel-app
+        composer create-project --prefer-dist laravel/laravel .
         php artisan key:generate
 
     - name: Install Composer Dependencies
