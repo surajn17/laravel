@@ -1,33 +1,57 @@
-name: Deploy Laravel App
+name: Laravel CI and Deployment
 
 on:
   push:
     branches:
-      - main  # Adjust this to your branch name
+      - main  # Change this to the appropriate branch
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout Repository
+      uses: actions/checkout@v2
 
-      - name: Install PHP and Composer
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y php php-cli php-mbstring unzip
-          php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-          php composer-setup.php --install-dir=/usr/local/bin --filename=composer
+    - name: Set Up PHP
+      run: |
+        sudo apt update
+        sudo apt upgrade -y
+        sudo apt install -y curl php-cli php-mbstring git unzip
 
-      - name: Install Composer Dependencies
-        run: |
-          composer install --no-interaction --no-dev --optimize-autoloader
-          cp .env.example .env
-          php artisan key:generate
+    - name: Install Composer
+      run: |
+        php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+        php composer-setup.php --install-dir=/usr/local/bin --filename=composer
+        php -r "unlink('composer-setup.php');"
 
-      - name: Deploy
-        run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@172.31.32.134 "cd /var/www/html/MyProject && git pull origin main && composer install --no-interaction --no-dev && php artisan migrate"
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.YOUR_SECRET_NAME }}  # Replace with the name of your secret
+    - name: Install Laravel Installer
+      run: |
+        composer global require laravel/installer
+        echo 'export PATH="$PATH:$HOME/.composer/vendor/bin"' >> $HOME/.bashrc
+        source $HOME/.bashrc
+
+    - name: Create and Set Up Laravel Project
+      run: |
+        laravel new my-laravel-app
+        cd my-laravel-app
+        php artisan key:generate
+
+    - name: Install Composer Dependencies
+      run: |
+        export COMPOSER_ALLOW_SUPERUSER=1
+        composer install --no-interaction --no-dev
+
+    - name: Run Tests
+      run: |
+        php artisan test
+
+    - name: Deploy to Ubuntu Server
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.YOUR_SECRET_NAME }}
+      run: |
+        echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+
+        # Replace `172.31.32.134` with your server's IP address
+        ssh ubuntu@172.31.32.134 'cd /home/ubutnu/my-laravel-app && git pull && composer install && php artisan migrate'
